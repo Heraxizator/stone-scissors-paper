@@ -1,0 +1,252 @@
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Камень-Ножницы-Бумага</title>
+  <link rel="stylesheet" href="CSS.css">
+
+ </head>
+ <body>
+<div class="main">
+    <select id="level">
+        <option>Hard</option>
+        <option selected = 'selected'>Normal</option>
+        <option>Easy</option>
+    </select>
+
+    <div class="gamers">
+        <h1>Игрок: <a id="player"></a></h1>
+        <h1>Ход: <a id="hplayer"></a></h1>
+        <h1>Компьютер:<a id="computer"></a></h1>
+        <h1>Ход: <a id="hcomputer"></a></h1>
+
+    </div>
+    
+
+    <button id="1"><img src="C:\Users\suhof\VS Code\Камень-Ножницы-Бумага\Нейронные сети\_dsc5989-1.jpg"></button>
+    <button id="2"><img src="C:\Users\suhof\VS Code\Камень-Ножницы-Бумага\Нейронные сети\5.jpg"></button>
+    <button id="3"><img src="C:\Users\suhof\VS Code\Камень-Ножницы-Бумага\Нейронные сети\paper_texture6106.jpg"></button>
+
+    
+</div>
+
+
+  
+<script>
+
+    function random(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+
+    function Run(inputs) {
+        for (i = 0; i < 1000; i++) {
+            for (let j = 0; j < inputs.length; j++) {
+                n = random(0, inputs.length - 2 );
+                nn.train(inputs[n], inputs[n + 1]);
+            }
+            
+        }
+    }
+/*
+    function rating(inputs, n) {
+        let d1 = 0;
+        let d2 = 0;
+        let h;
+        for (let i = 0; i < n; i++) {
+            Run(inputs);
+            h = random(1, 3);
+            inputs.push(h);
+            if (nn.query(inputs[inputs.length - 2]) == h) {
+                d1++;
+            }
+            else {
+                d2++;
+            }
+        }
+        return (d1 / (d1 + d2));
+    }
+
+*/
+    
+    class NeuralNetwork{
+        constructor(k, level) {
+            this.k = k;
+            this.lvl = level;
+            this.w1 = Math.random();
+            this.w2 = Math.random();
+            this.w3 = Math.random();
+            this.w4 = Math.random();
+            this.w5 = Math.random();
+
+        }
+
+        y(x, level) {
+            if (level == 'Hard') {
+                return this.w5 * Math.pow(x, 4) + this.w4 * Math.pow(x, 3) + this.w3 * Math.pow(x, 2) + this.w2 * x + this.w1;
+            }
+
+            if (level == 'Normal') {
+                return this.w4 * Math.pow(x, 3) + this.w3 * Math.pow(x, 2) + this.w2 * x + this.w1;
+            }
+
+            if (level == 'Easy') {
+                return this.w3 * Math.pow(x, 2) + this.w2 * x + this.w1;
+            }
+        }
+
+        train(inputs, targets) {
+            this.outputs = this.y(inputs, this.lvl);
+            this.error = targets - this.outputs;
+
+            this.w5 += this.k * this.error * Math.pow(inputs, 4);
+            this.w4 += this.k * this.error * Math.pow(inputs, 3);
+            this.w3 += this.k * this.error * Math.pow(inputs, 2);
+            this.w2 += this.k * this.error * inputs;
+            this.w1 += this.k * this.error;
+        }
+
+        query(inputs){
+            this.outputs = this.y(inputs, this.lvl);
+            return this.outputs;
+        }
+    }
+
+    nn = new NeuralNetwork(0.0001, 'Normal');
+    var x = 0;
+    var s1 = 0;
+    var s2 = 0;
+    var c1 = 0;
+    var c2 = 0;
+
+    var b1 = document.getElementById('1');
+    var b2 = document.getElementById('2');
+    var b3 = document.getElementById('3');
+    var player = document.getElementById('player');
+    var computer = document.getElementById('computer');
+    var hplayer = document.getElementById('hplayer');
+    var hcomputer = document.getElementById('hcomputer');
+    var select = document.getElementById('level');
+    inputs = [1, 1, 1];
+   // for (let i = 0; i < 3; i++) {
+   //     inputs.push(random(1, 3));
+   // }
+
+    var k = inputs.length - 1;
+    //console.log(rating(inputs, 100));
+
+    Run(inputs);
+
+    function count() {
+        nn.lvl = select.value;
+        inputs.push(x);
+        Run(inputs);
+        x1 = Math.round(nn.query(inputs[k]));
+
+        if (x1 == 1) {
+            y = 3;
+        }
+
+        if (x1 == 2) {
+            y = 1;
+        }
+
+        if (x1 == 3) {
+            y = 2;
+        }
+
+
+        if ((x == 1) && (y == 2)) {
+            s1++;
+        }
+
+        if ((x == 1) && (y == 3)) {
+            s2++;
+        }
+
+        if ((x == 2) && (y == 1)) {
+            s2++;
+        }
+
+        if ((x == 2) && (y == 3)) {
+            s1++;
+        }
+
+        if ((x == 3) && (y == 1)) {
+            s1++;
+        }
+
+        if ((x == 3) && (y == 2)) {
+            s2++;
+        }
+
+        player.textContent = s1;
+        computer.textContent = s2;
+
+        if (x == 1) {
+            hplayer.textContent = "Камень";
+        }
+
+        if (x == 2) {
+            hplayer.textContent = "Ножницы";
+        }
+
+        if (x == 3) {
+            hplayer.textContent = "Бумага";
+        }
+
+        if (y == 1) {
+            hcomputer.textContent = "Камень";
+        }
+
+        if (y == 2) {
+            hcomputer.textContent = "Ножницы";
+        }
+
+        if (y == 3) {
+            hcomputer.textContent = "Бумага";
+        }
+
+
+        if (x == x1) {
+            c1++;
+        }
+
+        else {
+            c2++;
+        }
+
+
+        console.log('Игрок', x);
+        console.log('Комп', x1);
+        console.log('rate', c1 / (c1 + c2));
+        console.log(inputs);
+        k++;
+    }
+
+
+    b1.onclick = function() {
+        x = 1;
+        count();
+    }
+    b2.onclick = function() {
+        x = 2;
+        count();
+    }
+    b3.onclick = function() {
+        x = 3;
+        count();
+    }
+
+
+
+    
+    
+</script>
+
+ </body>
+</html>
+
+
+
