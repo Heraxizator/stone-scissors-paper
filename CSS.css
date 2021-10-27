@@ -1,0 +1,21 @@
+img {
+    width: 600px;
+    height: 650px;
+    
+}
+
+.computer {
+    text-align: right;
+    
+}
+
+
+button, .gamers {
+    margin-left: 10px;
+}
+
+.gamers {
+    position: relative;
+    font-size: medium;
+}
+
